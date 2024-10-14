@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+
+<!-- Hey, don't look at this code! It's all AI generated, and not very pretty, but as long as it works I'm happy!
+     Just don't judge for how it looks, okay? -->
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Climate Impact Ordering Challenge</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f9f9f9;
+      margin: 0;
+      padding: 0;
+    }
+
+    .game-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      position: relative;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 10px;
+    }
+
+    .instructions-score-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 5px;
+    }
+
+    .instructions {
+      flex: 1;
+      color: #333;
+      font-size: 16px;
+      margin-bottom: 15px;
+    }
+    
+    .instructions a {
+      color: #333;
+      text-decoration: none;
+    }
+    
+    .instructions a:hover {
+      text-decoration: underline;
+    }
+
+    #score {
+      font-size: 20px;
+      color: #333;
+      align-self: flex-end;
+    }
+
+    .card-container {
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+      overflow-x: auto;
+      padding: 10px;
+      background-color: #e0e0e0;
+      margin-bottom: 0px;
+      border-radius: 10px;
+      min-height: 180px;
+    }
+    
+    .down-pointing-text-container {
+      display: flex;
+      justify-content: center;
+      width: 100%; 
+    }
+    
+    .down-pointing-text {
+      display: flex;
+      justify-content: space-between;
+      width: 600px; 
+      text-align: center;
+    }
+    
+    .emission-guidance {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding: 0 10px;
+    }
+    
+    .emission-guidance .left-text,
+    .emission-guidance .right-text {
+      font-size: 18px;
+      color: #333;
+    }
+    
+    .emission-guidance .buttons-container {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .emission-guidance button {
+      padding: 10px 20px;
+      font-size: 20px;
+      cursor: pointer;
+      background-color: #28a745;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      margin: 5px;
+    }
+    
+    .emission-guidance button:hover {
+      background-color: #218838;
+    }
+    
+    /* Pulsing animation for the Check Order button */
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 rgba(40, 167, 69, 0.7);
+      }
+      40% {
+        transform: scale(1);
+        box-shadow: 0 0 0 rgba(40, 167, 69, 0.7);
+      }
+      70% {
+        transform: scale(1.05);
+        box-shadow: 0 0 10px rgba(40, 167, 69, 0.7);
+      }
+      100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 rgba(40, 167, 69, 0.7);
+      }
+    }
+
+    .pulse {
+      animation: pulse 2s infinite;
+    }
+
+    .card {
+      width: 150px;
+      height: 180px;
+      margin: 0px 10px 0px 0px;
+      padding: 10px 5px 5px 5px;
+      background-color: #fff;
+      border: 2px solid #ccc;
+      border-radius: 10px;
+      box-sizing: border-box;
+      cursor: move;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      text-align: center;
+      font-family: Arial, sans-serif;
+      font-size: 16px;
+      position: relative;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      transition: transform 0.2s;
+    }
+
+    .card:hover {
+      transform: scale(1.05);
+    }
+
+    .sortable-ghost {
+      opacity: 0.4;
+    }
+
+    #message {
+      font-family: Arial, sans-serif;
+      font-size: 18px;
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    .emission-factor {
+      font-size: 16px;
+      color: #333;
+      position: absolute;
+      bottom: 40px;
+    }
+
+    .hidden-ef .emission-factor {
+      display: none;
+    }
+
+    @keyframes flash-green {
+      0% { background-color: #fff; }
+      10% { background-color: #d4edda; }
+      100% { background-color: #fff; }
+    }
+
+    .flash-ef-correct {
+      animation: flash-green 1s ease-in-out;
+    }
+
+    @keyframes flash-red {
+      0% { background-color: #fff; }
+      10% { background-color: #f8d7da; }
+      100% { background-color: #fff; }
+    }
+
+    .flash-ef-wrong {
+      animation: flash-red 1s ease-in-out;
+    }
+
+    .result-emoji {
+      font-size: 24px;
+      position: absolute;
+      bottom: 10px;
+    }
+    
+    .info-section {
+      padding: 20px;
+      text-align: left;
+      color: #555;
+      font-size: 14px;
+    }
+    
+    .info-section a {
+      color: #555;
+      text-decoration: none;
+    }
+    
+    .info-section a:hover {
+      text-decoration: underline;
+    }
+    
+    .footer {
+      padding: 20px;
+      text-align: center;
+      color: #777;
+      font-size: 12px;
+    }
+    
+    .footer a {
+      color: #777;
+      text-decoration: none;
+    }
+    
+    .footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="game-container">
+    <h1>Climate Impact Sorting Challenge</h1>
+    <div class="instructions-score-container">
+    <div class="instructions">
+      Place the cards in order of increasing climate impact. How many can you get right before you make a misstake?<br>
+    </div>
+      <div id="score">Score: 0</div>
+    </div>
+    <div id="source-container" class="card-container"></div>
+    <div class="down-pointing-text-container">
+      <div class="down-pointing-text">
+        <span style="font-size: 26px; flex: 1;">👇</span>
+        <span style="font-size: 18px; flex: 4;">Drag and place in the right order.</span>
+        <span style="font-size: 26px; flex: 1;">👇</span>
+      </div>
+    </div>
+    <div id="card-container" class="card-container"></div>
+    <div class="emission-guidance">
+      <div class="left-text">←🌱Less impact</div>
+      <div class="buttons-container">
+        <button id="check-order-btn">Check Order</button>
+        <button id="restart-btn" style="display: none;">Restart Game</button>
+      </div>
+      <div class="right-text">More impact🔥→</div>
+    </div>
+    <div id="message"></div>
+    
+    <div class="info-section">
+      <p><b>Where is this data from?</b><br>
+      The data is from <a href="https://denstoreklimadatabase.dk/en/background">The Big Climate Database v1.2</a>, specifically the Danish emission factors. 
+      I chose the Danish emission factors as they were the most complete, as this database is of Danish origin, but these emission factors will be roughly applicable to other European countries as well.
+      </p>
+      
+      <p><b>Any caveats?</b><br>
+      Yes, lots. Notably, these emission factors are <i>averages</i>, and the specific climate impact of any type of food can vary significantly depending on how the food is produced. 
+      Another thing to consider is that the emission factors are per kg of food. This does not take into account that different foods have different nutritional values. 
+      For example, a kg of butter has a much higher climate impact than a kg of lettuce, but a kg of butter also has a much higher energy content than a kg of lettuce.
+      </p>
+      
+      <p><b>Who made this?</b><br>
+      This was put together by me, Rasmus Bååth, in 2024, mostly by shouting at the computer until it did what I wanted (a.k.a. AI-driven development). 
+      If you want to know more about me, check out my website: <a href="https://www.sumsar.net">https://sumsar.net</a>.
+      </p>
+    </div>
+
+    <div class="footer">
+      <p>
+        Copyright &copy; <span id="current-year"></span> - Rasmus Bååth<br>
+        Licensed under a <a href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>
+      </p>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+  <script>
+    var candidateCards = [
+      { description: "Average beef", emissionFactor: 70.1637329569624 },
+      { description: "Bottled still water", emissionFactor: 0.391578404837695 },
+      { description: "Pâté", emissionFactor: 5.504557625571 }
+    ];
+
+    var score = 0;
+    var usedCards = [];
+
+    function initGame() {
+      score = 0;
+      usedCards = [];
+      document.getElementById('source-container').innerHTML = '';
+      document.getElementById('card-container').innerHTML = '';
+      document.getElementById('message').textContent = '.';
+      document.getElementById('message').style.visibility = 'hidden';
+      document.getElementById('score').textContent = 'Score: ' + score;
+      document.getElementById('restart-btn').style.display = 'none';
+      document.getElementById('check-order-btn').style.display = 'inline-block';
+      document.getElementById('check-order-btn').classList.remove('pulse');
+      nextRound();
+    }
+
+    function nextRound() {
+      if (usedCards.length === candidateCards.length) {
+        document.getElementById('message').style.visibility = 'visible';
+        document.getElementById('message').textContent = 'Congratulations! You have placed all cards correctly!';
+        document.getElementById('check-order-btn').style.display = 'none';
+        document.getElementById('restart-btn').style.display = 'inline-block';
+        return;
+      }
+
+      var cardsToPlace = usedCards.length === 0 ? 2 : 1;
+      var remainingCards = candidateCards.filter(card => !usedCards.includes(card));
+
+      if (remainingCards.length < cardsToPlace) {
+        cardsToPlace = remainingCards.length;
+      }
+
+      var sourceContainer = document.getElementById('source-container');
+      sourceContainer.innerHTML = '';
+
+      for (var i = 0; i < cardsToPlace; i++) {
+        var randomIndex = Math.floor(Math.random() * remainingCards.length);
+        var selectedCard = remainingCards.splice(randomIndex, 1)[0];
+        usedCards.push(selectedCard);
+
+        var cardDiv = document.createElement('div');
+        cardDiv.className = 'card hidden-ef';
+        cardDiv.setAttribute('emission_factor', selectedCard.emissionFactor);
+        cardDiv.innerHTML = `<div>${selectedCard.description}</div><div class="emission-factor">${selectedCard.emissionFactor.toFixed(2)} kg CO₂e</div>`;
+
+        sourceContainer.appendChild(cardDiv);
+      }
+
+      sourceSortable.destroy();
+      sourceSortable = Sortable.create(sourceContainer, {
+        group: {
+          name: 'cards',
+          put: false
+        },
+        sort: false,
+        animation: 150,
+        ghostClass: 'sortable-ghost',
+        direction: 'horizontal',
+        onEnd: function () {
+          updateCheckButtonPulse();
+        }
+      });
+
+      updateCheckButtonPulse();
+    }
+
+    var sourceContainer = document.getElementById('source-container');
+    var sourceSortable = Sortable.create(sourceContainer, {
+      group: {
+        name: 'cards',
+        put: false
+      },
+      sort: false,
+      animation: 150,
+      ghostClass: 'sortable-ghost',
+      direction: 'horizontal',
+      onEnd: function () {
+        updateCheckButtonPulse();
+      }
+    });
+
+    var cardContainer = document.getElementById('card-container');
+    var cardSortable = Sortable.create(cardContainer, {
+      group: {
+        name: 'cards',
+        pull: false,
+        put: true
+      },
+      animation: 150,
+      ghostClass: 'sortable-ghost',
+      direction: 'horizontal',
+      onEnd: function () {
+        updateCheckButtonPulse();
+      }
+    });
+
+    function updateCheckButtonPulse() {
+      var sourceCards = document.querySelectorAll('#source-container .card');
+      var checkOrderBtn = document.getElementById('check-order-btn');
+      if (sourceCards.length === 0) {
+        checkOrderBtn.classList.add('pulse');
+      } else {
+        checkOrderBtn.classList.remove('pulse');
+      }
+    }
+
+    function checkOrder() {
+      var cards = document.querySelectorAll('#card-container .card');
+      if (cards.length === 0) {
+        alert('Please place the cards into the sequence.');
+        return;
+      }
+      var isCorrect = true;
+      var prevEmissionFactor = -Infinity;
+
+      for (var i = 0; i < cards.length; i++) {
+        var emissionFactor = parseFloat(cards[i].getAttribute('emission_factor'));
+        if (emissionFactor < prevEmissionFactor) {
+          isCorrect = false;
+          break;
+        }
+        prevEmissionFactor = emissionFactor;
+      }
+
+      var newCards = document.querySelectorAll('#card-container .card.hidden-ef');
+      newCards.forEach(function(card) {
+        card.classList.remove('hidden-ef');
+        card.classList.add(isCorrect ? 'flash-ef-correct' : 'flash-ef-wrong');
+      });
+
+      var emoji = isCorrect ? '✅' : '❌';
+      newCards.forEach(function(card) {
+        var emojiDiv = document.createElement('div');
+        emojiDiv.className = 'result-emoji';
+        emojiDiv.textContent = emoji;
+        card.appendChild(emojiDiv);
+      });
+
+      var messageEl = document.getElementById('message');
+      messageEl.style.visibility = 'visible';
+      if (isCorrect) {
+        score++;
+        document.getElementById('score').textContent = 'Score: ' + score;
+        messageEl.style.color = 'green';
+        messageEl.textContent = 'Correct order!';
+        document.getElementById('check-order-btn').classList.remove('pulse');
+        setTimeout(function() {
+          messageEl.textContent = '.';
+          messageEl.style.visibility = 'hidden';
+          nextRound();
+        }, 1000);
+      } else {
+        messageEl.style.color = 'red';
+        messageEl.textContent = 'Incorrect order. Game over! Your total score is ' + score + '.';
+        document.getElementById('check-order-btn').style.display = 'none';
+        document.getElementById('restart-btn').style.display = 'inline-block';
+        document.getElementById('check-order-btn').classList.remove('pulse');
+      }
+    }
+
+    document.getElementById('check-order-btn').addEventListener('click', function() {
+      var sourceCards = document.querySelectorAll('#source-container .card');
+      if (sourceCards.length > 0) {
+        alert('Please place all new cards into the sequence.');
+        return;
+      }
+      checkOrder();
+    });
+
+    document.getElementById('restart-btn').addEventListener('click', initGame);
+    
+    document.getElementById('current-year').textContent = new Date().getFullYear();
+    
+    initGame();
+  </script>
+</body>
+</html>
