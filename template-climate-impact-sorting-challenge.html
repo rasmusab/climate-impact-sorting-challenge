@@ -1,7 +1,10 @@
 <!DOCTYPE html>
 
-<!-- Hey, don't look at this code! It's all AI generated, and not very pretty, but as long as it works I'm happy!
-     Just don't judge for how it looks, okay? -->
+<!-- 
+  Hey, don't look at this code! It's all AI generated slop, and not very pretty, 
+  but as long as it works I'm happy! Just don't judge for how it looks, okay? 
+-->
+     
 <html>
 <head>
   <meta charset="UTF-8">
@@ -12,6 +15,7 @@
     background-color: #f9f9f9;
     margin: 0;
     padding: 0;
+    color: #333;
   }
 
   .game-container {
@@ -23,7 +27,6 @@
 
   h1 {
     text-align: center;
-    color: #333;
     margin-bottom: 10px;
   }
 
@@ -36,23 +39,12 @@
 
   .instructions {
     flex: 1;
-    color: #333;
     font-size: 16px;
     margin-bottom: 15px;
   }
 
-  .instructions a {
-    color: #333;
-    text-decoration: none;
-  }
-
-  .instructions a:hover {
-    text-decoration: underline;
-  }
-
   #score {
     font-size: 20px;
-    color: #333;
     align-self: flex-end;
   }
 
@@ -80,6 +72,16 @@
     width: 600px;
     text-align: center;
   }
+  
+   .down-pointing-text-arrow {
+      font-size: 26px;
+      flex: 1;
+    }
+  
+  .down-pointing-text-instruction {
+    font-size: 18px;
+    flex: 4;
+  }
 
   .emission-guidance {
     display: flex;
@@ -92,7 +94,6 @@
   .emission-guidance .left-text,
   .emission-guidance .right-text {
     font-size: 18px;
-    color: #333;
   }
 
   .emission-guidance .buttons-container {
@@ -178,7 +179,6 @@
 
   .emission-factor {
     font-size: 16px;
-    color: #333;
     position: absolute;
     bottom: 40px;
   }
@@ -277,6 +277,14 @@
     .down-pointing-text {
       width: 450px;
     }
+    
+    .down-pointing-text-arrow {
+      font-size: 18px;
+    }
+  
+    .down-pointing-text-instruction {
+      font-size: 14px;
+    }
 
     .emission-guidance {
       margin-bottom: 15px;
@@ -349,9 +357,9 @@
     <div id="source-container" class="card-container"></div>
     <div class="down-pointing-text-container">
       <div class="down-pointing-text">
-        <span style="font-size: 26px; flex: 1;">👇</span>
-        <span style="font-size: 18px; flex: 4;">Drag and place in the right order.</span>
-        <span style="font-size: 26px; flex: 1;">👇</span>
+        <span class="down-pointing-text-arrow">👇</span>
+        <span class="down-pointing-text-instruction">Drag and place in the right order.</span>
+        <span class="down-pointing-text-arrow">👇</span>
       </div>
     </div>
     <div id="card-container" class="card-container"></div>
@@ -396,10 +404,15 @@
     var candidateCards = [
       { description: "Average beef", emissionFactor: 70.1637329569624 },
       { description: "Bottled still water", emissionFactor: 0.391578404837695 },
-      { description: "Pâté", emissionFactor: 5.504557625571 }
+      { description: "Pâté", emissionFactor: 5.504557625571 },
+      { description: "1 kg of Tuna, in tomato sauce, canned", emissionFactor: 4.48117893436134 },
+      { description: "1 kg of Pork, minced and bound with flour and egg, boiled, frozen, ready meals", emissionFactor: 2.24191985596381 },
+      { description: "1 kg of Crab claws, meat", emissionFactor: 9.76817138587099 },
+      { description: "1 kg of Caviar, made from capelin roe", emissionFactor: 4.15273165726087 },
     ];
 
     var score = 0;
+    var highscore = 0;
     var usedCards = [];
 
     function initGame() {
@@ -415,7 +428,7 @@
       document.getElementById('check-order-btn').classList.remove('pulse');
       nextRound();
     }
-
+    
     function nextRound() {
       if (usedCards.length === candidateCards.length) {
         document.getElementById('message').style.visibility = 'visible';
@@ -509,9 +522,9 @@
     function checkOrder() {
       var cards = document.querySelectorAll('#card-container .card');
       if (cards.length === 0) {
-        alert('Please place the cards into the sequence.');
+        alert('Please drag all cards from the top row to the bottom row first.');
         return;
-      }
+      } 
       var isCorrect = true;
       var prevEmissionFactor = -Infinity;
 
@@ -553,7 +566,14 @@
         }, 1000);
       } else {
         messageEl.style.color = 'red';
-        messageEl.textContent = 'Incorrect order. Game over! Your total score is ' + score + '.';
+        var highscoreText = ""
+        if(score > highscore){
+          highscore = score;
+          highscoreText = "It's a new highscore!";
+        } else  if(score < highscore) {
+          highscoreText = "The current highscore is " + highscore + ".";
+        }
+        messageEl.textContent = 'Incorrect order. Game over! Your total score is ' + score + '. ' + highscoreText;
         document.getElementById('check-order-btn').style.display = 'none';
         document.getElementById('restart-btn').style.display = 'inline-block';
         document.getElementById('check-order-btn').classList.remove('pulse');
@@ -563,7 +583,7 @@
     document.getElementById('check-order-btn').addEventListener('click', function() {
       var sourceCards = document.querySelectorAll('#source-container .card');
       if (sourceCards.length > 0) {
-        alert('Please place all new cards into the sequence.');
+        alert('Please drag all cards from the top row to the bottom row first.');
         return;
       }
       checkOrder();
