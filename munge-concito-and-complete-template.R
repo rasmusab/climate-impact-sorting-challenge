@@ -28,7 +28,8 @@ concito <- concito_raw |>
   select(description = Name, emission_factor = `DK version 1.2`) |> 
   mutate(
     description = str_remove_all(description, name_parts_to_remove_regexp),
-    description = paste0("1 kg of ", description)
+    description = paste0("1 kg of ", description),
+    emission_factor = round(emission_factor, 2)
   ) |>
   filter(emission_factor > 0) |> 
   na.omit()
